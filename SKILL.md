@@ -199,6 +199,48 @@ curl -X POST http://AGENT_IP:18789/v1/chat/completions \
   -d '{"model":"openclaw:MODEL","messages":[{"role":"user","content":"Run session cleanup: archive orphaned sessions not in sessions.json, report before/after stats."}]}'
 ```
 
+### Multi-Agent Discord Configuration (Bot-to-Bot)
+
+By default, OpenClaw drops messages originating from Discord bots. To enable agents to communicate directly in shared channels:
+
+**Step 1 — Enable bot message reception on ALL agents:**
+```json
+// openclaw.json → discord plugin
+"discord": {
+  "allowBots": true,
+  ...
+}
+```
+
+⚠️ **Security:** `allowBots: true` widens the attack surface — any bot in your guild can now trigger the agent. Mitigate with `groupPolicy: "allowlist"` and explicit channel allowlists. Backup configs before changing.
+
+**Step 2 — Disable streaming on all agents:**
+```json
+"discord": {
+  "blockStreaming": true,
+  ...
+}
+```
+
+OpenClaw streams responses by editing a Discord message incrementally. This fires both `MESSAGE_CREATE` (stub) and multiple `MESSAGE_UPDATE` events. Other agents with `allowBots: true` trigger on the partial stub and interpret mid-stream edits as cut-off messages. `blockStreaming: true` posts the complete response at once — one `MESSAGE_CREATE`, no edits, no false triggers. Trade-off: human observers don't see real-time typing preview.
+
+**Step 3 — Configure `requireMention` per channel:**
+
+`requireMention` can be set per-channel (not just globally) in the `groups` object:
+
+```json
+"groups": {
+  "CHANNEL_ID": {
+    "requireMention": false  // respond to all messages in this channel
+  },
+  "COORDINATION_CHANNEL_ID": {
+    "requireMention": false  // agents respond to all coordination messages
+  }
+}
+```
+
+**WebSocket note:** Silent (auto-approved) device pairing only works for `localhost` connections. Remote agents connecting via WebSocket require interactive pairing approval in the OpenClaw UI. REST API (`/tools/invoke`) is the reliable path for remote agent communication — but it only exposes 4 tools: `session_status`, `sessions_list`, `message`, `web_search`.
+
 ## Troubleshooting
 
 ### "Resource deadlock avoided" on files
