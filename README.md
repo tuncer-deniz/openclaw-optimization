@@ -2,6 +2,23 @@
 
 Systematic performance optimization for [OpenClaw](https://github.com/openclaw/openclaw) AI agents. Reduce token usage, clean up session bloat, and automate ongoing maintenance.
 
+## What's New in v2
+
+**Smart retention policy** — The session cleanup script now classifies sessions by type and applies appropriate retention:
+
+| Session Type | Retention | Rationale |
+|--------------|-----------|-----------|
+| Persistent channels (#discord, telegram) | Forever | Compaction handles size |
+| Completed sub-agents | 24 hours | Debugging window only |
+| Cron job sessions | 24 hours | Each run is isolated |
+| Stale sessions | 48 hours | If untouched, it's dead |
+| Large stale (>5MB) | 7 days | Extra buffer |
+
+**Dry-run mode** — Preview what would be archived before committing:
+```bash
+bash scripts/session-cleanup.sh main ~/.openclaw/agents --dry-run
+```
+
 ## The Problem
 
 OpenClaw agents accumulate cruft over time:
@@ -16,7 +33,7 @@ This skill fixes all of it.
 | Tool | Purpose |
 |------|---------|
 | `health-check.sh` | Quick traffic-light assessment of your setup |
-| `session-cleanup.sh` | Archive orphaned and stale sessions |
+| `session-cleanup.sh` | Smart retention-based session archival (v2) |
 | `token-tracker.sh` | Log per-agent usage metrics over time |
 | `find-orphans.py` | Identify unreferenced session files |
 | `fix-sessions-json.py` | Repair sessions.json pointing to missing files |
@@ -73,10 +90,10 @@ bash scripts/token-tracker.sh
 Set up cron jobs for hands-off maintenance:
 
 ```bash
-# Weekly session cleanup (Sundays 3 AM)
+# Daily session cleanup (4 AM) — recommended with v2 retention policy
 openclaw cron add \
-  --name "weekly-session-cleanup" \
-  --cron "0 3 * * 0" \
+  --name "daily-session-cleanup" \
+  --cron "0 4 * * *" \
   --agent main \
   --session isolated \
   --message "Run: bash ~/clawd/skills/openclaw-optimization/scripts/session-cleanup.sh"
@@ -89,6 +106,8 @@ openclaw cron add \
   --session isolated \
   --message "Run: bash ~/clawd/skills/openclaw-optimization/scripts/token-tracker.sh"
 ```
+
+With the 24h/48h retention windows in v2, **daily cleanup is recommended** over weekly.
 
 ## Results
 
