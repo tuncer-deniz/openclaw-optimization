@@ -45,18 +45,34 @@ done
 
 ## Phase 1: Session Cleanup
 
-### Identify Orphaned Sessions
-Sessions accumulate from sub-agents, cron jobs, and completed tasks. Most are orphaned (not referenced in `sessions.json`).
+### Smart Retention Policy (v2)
+
+Sessions accumulate from sub-agents, cron jobs, and completed tasks. The v2 cleanup script uses intelligent retention based on session type:
+
+| Session Type | Retention | Rationale |
+|--------------|-----------|-----------|
+| Persistent channels (#henri, telegram, etc.) | Forever | Continuity — compaction handles size |
+| Completed sub-agents | 24 hours | Debugging window only |
+| Cron job sessions | 24 hours | Each run is isolated |
+| Any stale session | 48 hours | If untouched, it's dead |
+| Large stale (>5MB) | 7 days | Extra buffer for big sessions |
+
+### Run Cleanup
 
 ```bash
+# Preview what would be archived (safe)
+bash scripts/session-cleanup.sh main ~/.openclaw/agents --dry-run
+
+# Actually archive
 bash scripts/session-cleanup.sh
 ```
 
 The script:
-1. Reads `sessions.json` for referenced session IDs
-2. Moves unreferenced `.jsonl` files to `archive/YYYY-MM-DD/`
-3. Identifies stale large sessions (>10MB, not modified in 7+ days)
+1. Identifies session type (channel, sub-agent, cron, etc.) from `sessions.json`
+2. Applies retention policy based on type and last activity
+3. Moves expired sessions to `archive/YYYY-MM-DD/`
 4. Cleans archives older than 30 days
+5. Reports detailed breakdown of what was kept/archived
 
 ### Manual Cleanup (if needed)
 ```bash
