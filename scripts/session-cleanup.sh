@@ -24,10 +24,44 @@ fi
 [ -z "$DRY_RUN" ] && mkdir -p "$ARCHIVE_DIR"
 
 echo "═══════════════════════════════════════════"
-echo "  Session Cleanup v2: $AGENT"
+echo "  Session Cleanup v3: $AGENT"
 echo "  $(date '+%Y-%m-%d %H:%M')"
 [ -n "$DRY_RUN" ] && echo "  MODE: DRY RUN (no changes)"
 echo "═══════════════════════════════════════════"
+
+# Phase 0: Clean orphaned .tmp files (atomic write leftovers)
+TMP_COUNT=$(find "$SESSION_DIR" -maxdepth 1 -name "sessions.json.*.tmp" 2>/dev/null | wc -l | tr -d ' ')
+if [ "$TMP_COUNT" -gt 0 ]; then
+  TMP_SIZE=$(find "$SESSION_DIR" -maxdepth 1 -name "sessions.json.*.tmp" -exec stat -f%z {} + 2>/dev/null | awk '{s+=$1}END{printf "%.1f", s/1048576}')
+  echo ""
+  echo "ORPHANED TMP FILES: $TMP_COUNT (${TMP_SIZE}MB)"
+  if [ -z "$DRY_RUN" ]; then
+    find "$SESSION_DIR" -maxdepth 1 -name "sessions.json.*.tmp" -delete
+    echo "  ✓ Removed"
+  else
+    echo "  [DRY RUN] Would remove"
+  fi
+fi
+
+# Phase 0b: Prune sessions.json — remove entries pointing to nonexistent files
+if [ -z "$DRY_RUN" ]; then
+  PRUNED=$(python3 -c "
+import json, os
+sf = '$SESSION_DIR/sessions.json'
+with open(sf) as f:
+    data = json.load(f)
+before = len(data)
+kept = {k:v for k,v in data.items() if v.get('sessionFile') and os.path.exists(v['sessionFile'])}
+if len(kept) < before:
+    with open(sf, 'w') as f:
+        json.dump(kept, f, indent=2)
+print(f'{before - len(kept)}')
+" 2>/dev/null)
+  if [ "$PRUNED" -gt 0 ] 2>/dev/null; then
+    echo ""
+    echo "SESSIONS.JSON PRUNED: $PRUNED orphan entries removed"
+  fi
+fi
 
 # Count before
 BEFORE_COUNT=$(find "$SESSION_DIR" -maxdepth 1 -name "*.jsonl" | wc -l | tr -d ' ')
