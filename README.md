@@ -134,6 +134,20 @@ bash scripts/session-archive.sh --local-only
 
 Connects to Henri (local), Luna, and Atlas via SSH. Auto-syncs the cleanup script to remote machines if missing. Set up as a weekly cron for hands-off fleet maintenance.
 
+## Channel Health
+
+Verify multi-agent Discord channel visibility — gateway health + channel config across all machines:
+
+```bash
+# Check gateway status + channel config
+bash scripts/channel-health.sh
+
+# Override which channels to check
+CHANNEL_HEALTH_CHANNELS="coordination:123 orders:456" bash scripts/channel-health.sh
+```
+
+Edit the `SHARED_CHANNELS` array in the script to match your guild's channel IDs.
+
 ## Checkpoint on Spawn
 
 Prevents "continue where you left off" recovery loops after compaction or timeouts. Write a structured checkpoint before spawning subagents:
