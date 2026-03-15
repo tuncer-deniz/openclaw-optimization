@@ -18,11 +18,11 @@ SESSION_DIR = DATA_DIR / "agents"
 
 # USD per 1M tokens: (input, output)
 PRICING = {
-    # Anthropic (full and short names)
-    "anthropic/claude-opus-4-6": (15.0, 75.0),
-    "claude-opus-4-6": (15.0, 75.0),
-    "anthropic/claude-sonnet-4-6": (3.0, 15.0),
-    "claude-sonnet-4-6": (3.0, 15.0),
+    # Anthropic — Max subscription (OAuth), not API-billed
+    "anthropic/claude-opus-4-6": (0, 0),
+    "claude-opus-4-6": (0, 0),
+    "anthropic/claude-sonnet-4-6": (0, 0),
+    "claude-sonnet-4-6": (0, 0),
     # OpenAI Codex (subscription — $0)
     "openai-codex/gpt-5.4": (0, 0),
     "gpt-5.4": (0, 0),
