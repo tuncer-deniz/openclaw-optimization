@@ -2,9 +2,13 @@
 
 Systematic performance optimization for [OpenClaw](https://github.com/openclaw/openclaw) AI agents. Reduce token usage, clean up session bloat, and automate ongoing maintenance.
 
-## What's New in v2
+## What's New in v3
 
-**Smart retention policy** — The session cleanup script now classifies sessions by type and applies appropriate retention:
+**Orphaned temp file cleanup** — OpenClaw's atomic session writes leave behind `sessions.json.*.tmp` files that never get cleaned up. We found **23GB of these on one machine** and 2.9GB on another. v3 detects and removes them before they cause Node.js OOM crashes during `openclaw doctor` or `openclaw update`.
+
+**sessions.json pruning** — Removes entries pointing to nonexistent session files. One machine had 15,302 orphan entries inflating sessions.json to 289MB.
+
+**Smart retention policy (v2)** — Sessions classified by type with appropriate retention:
 
 | Session Type | Retention | Rationale |
 |--------------|-----------|-----------|
@@ -22,7 +26,9 @@ bash scripts/session-cleanup.sh main ~/.openclaw/agents --dry-run
 ## The Problem
 
 OpenClaw agents accumulate cruft over time:
-- **Orphaned sessions** from sub-agents and cron jobs pile up (we found 1,036 orphans totaling 75MB on one machine)
+- **Orphaned `.tmp` files** from atomic writes silently consume disk — we found 23GB on one machine, causing Node.js OOM crashes
+- **Orphaned session entries** in sessions.json pointing to deleted files (15,302 entries / 289MB on one machine)
+- **Orphaned sessions** from sub-agents and cron jobs pile up (1,036 orphans totaling 75MB on one machine)
 - **Bloated workspace files** (MEMORY.md, TOOLS.md) grow unchecked, eating context budget every message
 - **No visibility** into token usage trends or context budget allocation
 
@@ -115,7 +121,9 @@ From our production multi-agent setup (3 agents, 5 sub-agents):
 
 | Metric | Before | After |
 |--------|--------|-------|
+| Disk (tmp files) | 23GB | 0 |
 | Sessions (main) | 1,102 | 65 |
+| sessions.json | 289MB | 93KB |
 | Session storage | 132MB | 28MB |
 | MEMORY.md | 12.8KB | 5.9KB |
 | Workspace total | ~35KB | 20KB |
@@ -148,7 +156,7 @@ For remote agents via LAN API, the SKILL.md includes curl templates.
 
 ## Requirements
 
-- OpenClaw 2026.2.x
+- OpenClaw 2026.2.x+
 - Python 3.10+
 - bash
 
