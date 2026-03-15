@@ -44,6 +44,7 @@ This skill fixes all of it.
 | `find-orphans.py` | Identify unreferenced session files |
 | `fix-sessions-json.py` | Repair sessions.json pointing to missing files |
 | `checkpoint.sh` | Auto-checkpoint session state before subagent spawns |
+| `session-archive.sh` | Cross-machine session cleanup orchestrator (SSH) |
 | `SKILL.md` | Full optimization playbook for agents |
 
 ## Quick Start
@@ -115,6 +116,23 @@ openclaw cron add \
 ```
 
 With the 24h/48h retention windows in v2, **daily cleanup is recommended** over weekly.
+
+## Session Archive (Fleet-Wide Cleanup)
+
+Run session-cleanup.sh across all machines in one command:
+
+```bash
+# Preview (no changes)
+bash scripts/session-archive.sh --dry-run
+
+# Clean all machines
+bash scripts/session-archive.sh
+
+# Local only (skip SSH)
+bash scripts/session-archive.sh --local-only
+```
+
+Connects to Henri (local), Luna, and Atlas via SSH. Auto-syncs the cleanup script to remote machines if missing. Set up as a weekly cron for hands-off fleet maintenance.
 
 ## Checkpoint on Spawn
 
