@@ -134,6 +134,26 @@ bash scripts/session-archive.sh --local-only
 
 Connects to Henri (local), Luna, and Atlas via SSH. Auto-syncs the cleanup script to remote machines if missing. Set up as a weekly cron for hands-off fleet maintenance.
 
+## Model Budget Watchdog
+
+Track per-model API spend, flag budget overruns, and show 7-day trends:
+
+```bash
+# Ingest today's usage from session JSONL files
+python3 scripts/model-budget-watchdog.py --ingest
+
+# Show report (default $5/day threshold)
+python3 scripts/model-budget-watchdog.py --report
+
+# Custom threshold
+python3 scripts/model-budget-watchdog.py --report --alert 10.00
+
+# Reset tracking
+python3 scripts/model-budget-watchdog.py --reset
+```
+
+Pricing is built-in for Anthropic, OpenRouter, and local models. Add new models to the `PRICING` dict. Subscription models (Codex gpt-5.4) and local models are $0.
+
 ## Channel Health
 
 Verify multi-agent Discord channel visibility — gateway health + channel config across all machines:
