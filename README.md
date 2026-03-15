@@ -43,6 +43,7 @@ This skill fixes all of it.
 | `token-tracker.sh` | Log per-agent usage metrics over time |
 | `find-orphans.py` | Identify unreferenced session files |
 | `fix-sessions-json.py` | Repair sessions.json pointing to missing files |
+| `checkpoint.sh` | Auto-checkpoint session state before subagent spawns |
 | `SKILL.md` | Full optimization playbook for agents |
 
 ## Quick Start
@@ -114,6 +115,26 @@ openclaw cron add \
 ```
 
 With the 24h/48h retention windows in v2, **daily cleanup is recommended** over weekly.
+
+## Checkpoint on Spawn
+
+Prevents "continue where you left off" recovery loops after compaction or timeouts. Write a structured checkpoint before spawning subagents:
+
+```bash
+bash scripts/checkpoint.sh \
+  "Building new feature X" \
+  "User asked for X, I proposed approach Y" \
+  "Waiting on CI results" \
+  "src/app/feature.tsx, AGENTS.md" \
+  "focused"
+```
+
+Writes to both `memory/session-state.md` (overwrite) and `memory/YYYY-MM-DD.md` (append). After compaction, agents read these files first to seamlessly resume.
+
+Add this rule to your AGENTS.md:
+```
+Before ANY sessions_spawn call or long-running exec (>2 min), write a checkpoint FIRST.
+```
 
 ## Results
 
