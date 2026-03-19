@@ -27,15 +27,15 @@ PRICING = {
     "github-copilot/claude-sonnet-4.6": (5.0,25.0),
 
     "github-copilot/gemini-2.5-pro": (1.0,10.0),
-    "github-copilot/gemini-3-flash-preview" (0.5,3),  
-    "github-copilot/gemini-3-pro-preview" (2,12),
+    "github-copilot/gemini-3-flash-preview": (0.5,3),  
+    "github-copilot/gemini-3-pro-preview": (2,12),
     "github-copilot/gemini-3.1-pro-preview": (2,12),
 
-    "github-copilot/gpt-4.1" (2,8),
+    "github-copilot/gpt-4.1": (2,8),
     "github-copilot/gpt-4o": (2.5,10.0),
 
     "github-copilot/gpt-5": (1.25,10.0),
-    "github-copilot/gpt-5-mini" (0.25,2),
+    "github-copilot/gpt-5-mini": (0.25,2),
 
     "github-copilot/gpt-5.1": (1.25,10),
     "github-copilot/gpt-5.1-codex": (1.25,10.0),
@@ -46,9 +46,9 @@ PRICING = {
     "github-copilot/gpt-5.2-codex": (1.75,14.0),
     "github-copilot/gpt-5.3-codex": (1.75,14.0),
 
-    "github-copilot/gpt-5.4" (2.5,15),	
+    "github-copilot/gpt-5.4": (2.5,15),	
 
-    "github-copilot/grok-code-fast-1" (0.2,1.5),
+    "github-copilot/grok-code-fast-1": (0.2,1.5),
     
     # Anthropic — Max subscription (OAuth), not API-billed
     "anthropic/claude-opus-4-6": (0, 0),
