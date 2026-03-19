@@ -183,7 +183,7 @@ openclaw cron add \
   --agent main \
   --session isolated \
   --timeout-seconds 120 \
-  --message "Run: bash ~/clawd/tools/session-cleanup.sh && bash ~/clawd/tools/token-usage-tracker.sh. Post before/after stats summary." \
+  --message "Run: bash ~/.openclaw/skills/openclaw-optimization/scripts/session-cleanup.sh && bash ~/.openclaw/skills/openclaw-optimization/scripts/token-tracker.sh. Post before/after stats summary." \
   --announce
 
 # Daily token tracking
@@ -194,7 +194,7 @@ openclaw cron add \
   --agent main \
   --session isolated \
   --timeout-seconds 60 \
-  --message "Run: bash ~/clawd/tools/token-usage-tracker.sh"
+  --message "Run: bash ~/.openclaw/skills/openclaw-optimization/scripts/token-tracker.sh"
 ```
 
 ## Phase 5: Multi-Agent Optimization
@@ -307,7 +307,7 @@ openclaw cron add \
   --cron "0 */6 * * *" \
   --agent main \
   --session isolated \
-  --message "Run: bash ~/clawd/skills/openclaw-optimization/scripts/camofox-cleanup.sh"
+  --message "Run: bash ~/.openclaw/skills/openclaw-optimization/scripts/camofox-cleanup.sh"
 ```
 
 ## Phase 7: Workspace Budget Tracking
