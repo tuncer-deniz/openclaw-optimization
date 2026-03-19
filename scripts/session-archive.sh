@@ -14,7 +14,7 @@ for arg in "$@"; do
 done
 
 CLEANUP_SCRIPT="skills/openclaw-optimization/scripts/session-cleanup.sh"
-WORKSPACE="${CLAWD_WORKSPACE:-$HOME/clawd}"
+WORKSPACE="${CLAWD_WORKSPACE:-$HOME/.openclaw}"
 RESULTS=""
 TOTAL_FREED=0
 
@@ -67,9 +67,9 @@ run_local
 
 if [ -z "$LOCAL_ONLY" ]; then
   echo ""
-  run_remote "Luna" "luna" "192.168.4.212" "/Users/luna/clawd"
+  run_remote "Luna" "luna" "192.168.4.212" "/Users/luna/.openclaw"
   echo ""
-  run_remote "Atlas" "atlas" "192.168.4.216" "/Users/atlas/clawd"
+  run_remote "Atlas" "atlas" "192.168.4.216" "/Users/atlas/.openclaw"
 fi
 
 echo ""

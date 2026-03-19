@@ -3,7 +3,7 @@
 # Logs per-agent session stats and workspace file sizes
 # Usage: bash token-tracker.sh [workspace_dir] [agents_dir]
 
-WORKSPACE="${1:-$HOME/clawd}"
+WORKSPACE="${1:-$HOME/.openclaw}"
 AGENTS_DIR="${2:-$HOME/.openclaw/agents}"
 TRACK_FILE="$WORKSPACE/memory/token-usage-log.jsonl"
 

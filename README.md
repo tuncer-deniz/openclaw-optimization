@@ -55,7 +55,7 @@ git clone https://github.com/tuncer-deniz/openclaw-optimization.git \
   ~/.openclaw/skills/openclaw-optimization
 
 # Or copy to your workspace
-cp -r openclaw-optimization ~/clawd/skills/
+cp -r openclaw-optimization ~/.openclaw/skills/
 
 # Run health check
 cd skills/openclaw-optimization
@@ -104,7 +104,7 @@ openclaw cron add \
   --cron "0 4 * * *" \
   --agent main \
   --session isolated \
-  --message "Run: bash ~/clawd/skills/openclaw-optimization/scripts/session-cleanup.sh"
+  --message "Run: bash ~/.openclaw/skills/openclaw-optimization/scripts/session-cleanup.sh"
 
 # Daily token tracking (6 AM)
 openclaw cron add \
@@ -112,7 +112,7 @@ openclaw cron add \
   --cron "0 6 * * *" \
   --agent main \
   --session isolated \
-  --message "Run: bash ~/clawd/skills/openclaw-optimization/scripts/token-tracker.sh"
+  --message "Run: bash ~/.openclaw/skills/openclaw-optimization/scripts/token-tracker.sh"
 ```
 
 With the 24h/48h retention windows in v2, **daily cleanup is recommended** over weekly.

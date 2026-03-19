@@ -3,7 +3,7 @@
 # Usage: checkpoint.sh "task" "exchanges" "pending" [key_files] [tone]
 set -euo pipefail
 
-WORKSPACE="${CLAWD_WORKSPACE:-$HOME/clawd}"
+WORKSPACE="${CLAWD_WORKSPACE:-$HOME/.openclaw}"
 STATE_FILE="$WORKSPACE/memory/session-state.md"
 DAILY_FILE="$WORKSPACE/memory/$(date +%Y-%m-%d).md"
 TIMESTAMP="$(date +'%H:%M %Z')"

@@ -3,7 +3,7 @@
 # Usage: bash health-check.sh [agents_dir] [workspace_dir]
 
 AGENTS_DIR="${1:-$HOME/.openclaw/agents}"
-WORKSPACE="${2:-$HOME/clawd}"
+WORKSPACE="${2:-$HOME/.openclaw}"
 
 echo "═══════════════════════════════════════════"
 echo "  OpenClaw Health Check — $(date '+%Y-%m-%d %H:%M')"
