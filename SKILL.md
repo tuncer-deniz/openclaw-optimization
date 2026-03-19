@@ -277,6 +277,137 @@ python3 scripts/fix-sessions-json.py
 ### Gateway slow after cleanup
 Restart: `openclaw gateway restart`
 
+## Phase 6: Camofox Tab Cleanup
+
+Camofox browser tabs spawned by cron jobs are never automatically closed. They accumulate silently until the REST API returns `429 max-tabs` errors, blocking all future browser work.
+
+### When to Use
+- Seeing `429` or "max tabs" errors from Camofox tools
+- After running browser-heavy cron jobs
+- As a daily/weekly scheduled cleanup
+
+### How to Run
+
+```bash
+# Preview (safe)
+bash scripts/camofox-cleanup.sh --dry-run
+
+# Actually close stale tabs
+bash scripts/camofox-cleanup.sh
+```
+
+**What it closes:**
+- Tabs whose `listItemId` matches `agent:*:cron:*` (cron-spawned)
+- Any tab older than 1 hour
+
+**Add to cron:**
+```bash
+openclaw cron add \
+  --name "camofox-tab-cleanup" \
+  --cron "0 */6 * * *" \
+  --agent main \
+  --session isolated \
+  --message "Run: bash ~/clawd/skills/openclaw-optimization/scripts/camofox-cleanup.sh"
+```
+
+## Phase 7: Workspace Budget Tracking
+
+Every message loads all workspace files. Unchecked growth burns tokens silently.
+
+### How to Run
+
+```bash
+bash scripts/workspace-budget.sh
+```
+
+Checks: `SOUL.md`, `TOOLS.md`, `MEMORY.md`, `AGENTS.md`, `IDENTITY.md`, `USER.md`, `BRAIN.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`
+
+Logs sizes to `~/.openclaw/workspace-budget.csv` with timestamps and shows growth trend vs. previous run.
+
+**Traffic lights:**
+| Status | Threshold | Action |
+|--------|-----------|--------|
+| 🟢 Green | <15KB per file | All good |
+| 🟡 Yellow | 15–25KB per file | Consider trimming |
+| 🔴 Red | >25KB per file | Trim immediately |
+
+**Add to cron (weekly audit):**
+```bash
+openclaw cron add \
+  --name "workspace-budget" \
+  --cron "0 9 * * 1" \
+  --agent main \
+  --session isolated \
+  --message "Run: bash ~/clawd/skills/openclaw-optimization/scripts/workspace-budget.sh. Post results to #alerts if any file is 🔴."
+```
+
+## Phase 8: Subagent Delegation
+
+The #1 cause of context bloat in the main session is inline tool calls. Every tool call adds tokens that never go away.
+
+**Rule: if a task needs >2-3 tool calls, spawn a subagent.**
+
+| Delegate to subagent | Keep inline |
+|---------------------|-------------|
+| Research (web fetches, URL analysis) | Quick one-shot answers |
+| Multi-file edits (read + edit + verify) | Conversational replies |
+| Email/inbox scans (multiple gog calls) | Simple config lookups |
+| Git operations (clone + inspect + commit) | Single file reads |
+| Browser-heavy workflows (snapshots, clicks) | — |
+
+**Why it works:** Subagent does the work, returns a clean summary, and its context dies. Main session receives one message instead of accumulating 10+ tool calls. Target: main session stays under 30K context.
+
+**AGENTS.md rule to add:**
+```
+If a task requires more than 2-3 tool calls, spawn a subagent.
+```
+
+## Phase 9: LCM (Lossless Context Management)
+
+OpenClaw supports automatic context compression via the `@martian-engineering/lossless-claw` plugin. It summarizes older turns into a compact DAG while preserving full retrievability.
+
+### Setup
+
+Install the plugin:
+```bash
+openclaw plugin install @martian-engineering/lossless-claw
+```
+
+Configure in `openclaw.json`:
+```json
+"plugins": {
+  "@martian-engineering/lossless-claw": {
+    "enabled": true,
+    "freshTailCount": 20,
+    "contextThreshold": 0.70
+  }
+}
+```
+
+**Key settings:**
+| Setting | Default | Purpose |
+|---------|---------|---------|
+| `freshTailCount` | 20 | Number of recent turns to keep verbatim (not summarized) |
+| `contextThreshold` | 0.70 | Fraction of context window that triggers compaction (0.70 = fires at 70%) |
+
+### How It Helps
+- Compaction fires automatically when context hits the threshold
+- Old turns are summarized losslessly — full text retrievable via `lcm_expand`
+- Main session context stays lean without losing history
+- Use `lcm_grep` to search compacted turns by keyword or regex
+
+### Retrieving Compacted Context
+```bash
+# Search for a topic in compacted history
+# (use lcm_grep tool in agent prompt)
+lcm_grep "pattern"
+
+# Expand a specific summary
+lcm_expand --summaryIds sum_abc123
+```
+
+LCM complements session cleanup — cleanup removes dead sessions, LCM compresses live ones.
+
 ## Success Metrics
 After full optimization:
 - [ ] All workspace files under target sizes
@@ -285,3 +416,6 @@ After full optimization:
 - [ ] Daily token tracking logging
 - [ ] Context usage <60% at session start
 - [ ] Month-over-month cost trending down (or stable)
+- [ ] No Camofox 429 max-tabs errors
+- [ ] Workspace budget CSV showing stable or declining trend
+- [ ] LCM plugin enabled with contextThreshold ≤ 0.75

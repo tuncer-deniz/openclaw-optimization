@@ -2,6 +2,16 @@
 
 Systematic performance optimization for [OpenClaw](https://github.com/openclaw/openclaw) AI agents. Reduce token usage, clean up session bloat, and automate ongoing maintenance.
 
+## What's New in v4
+
+**Camofox tab cleanup** — Cron jobs spawn Camofox browser tabs and never close them. They pile up silently until you hit `429 max-tabs` errors. `camofox-cleanup.sh` uses the Camofox REST API to close cron-spawned tabs (matched by `agent:*:cron:*` listItemId) and any tab older than 1 hour. Supports `--dry-run`.
+
+**Workspace budget tracking** — `workspace-budget.sh` measures all workspace context files (SOUL.md, TOOLS.md, MEMORY.md, etc.) and logs sizes to `~/.openclaw/workspace-budget.csv` with timestamps. Traffic-light output (🟢/🟡/🔴) at 15KB warn / 25KB critical, plus growth trend vs. last run.
+
+**Subagent delegation guidance** — SKILL.md now includes a delegation threshold rule: if a task needs >2-3 tool calls, spawn a subagent. Every inline tool call adds tokens that never go away. Subagents do the work, return a clean result, and their context dies. Main session target: stay under 30K context.
+
+**LCM integration notes** — The `@martian-engineering/lossless-claw` plugin compresses old conversation turns into a lossless DAG. SKILL.md covers install, key settings (`freshTailCount`, `contextThreshold`), and how to retrieve compacted context via `lcm_grep` / `lcm_expand`.
+
 ## What's New in v3
 
 **Orphaned temp file cleanup** — OpenClaw's atomic session writes leave behind `sessions.json.*.tmp` files that never get cleaned up. We found **23GB of these on one machine** and 2.9GB on another. v3 detects and removes them before they cause Node.js OOM crashes during `openclaw doctor` or `openclaw update`.
@@ -45,6 +55,8 @@ This skill fixes all of it.
 | `fix-sessions-json.py` | Repair sessions.json pointing to missing files |
 | `checkpoint.sh` | Auto-checkpoint session state before subagent spawns |
 | `session-archive.sh` | Cross-machine session cleanup orchestrator (SSH) |
+| `camofox-cleanup.sh` | Close orphaned Camofox tabs left by cron jobs (429 prevention) |
+| `workspace-budget.sh` | Track workspace file sizes with trend analysis and alerts |
 | `SKILL.md` | Full optimization playbook for agents |
 
 ## Quick Start
