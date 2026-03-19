@@ -1,4 +1,4 @@
-# 🚀 OpenClaw Optimization Skill
+# 🚀 OpenClaw Optimization Skill v4.0.0
 
 Systematic performance optimization for [OpenClaw](https://github.com/openclaw/openclaw) AI agents. Reduce token usage, clean up session bloat, and automate ongoing maintenance.
 
