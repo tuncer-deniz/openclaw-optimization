@@ -1,4 +1,15 @@
-# 🚀 OpenClaw Optimization Skill v4.0.0
+<p align="center">
+  <img src="banner.png" alt="OpenClaw Optimization" width="100%">
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/Built%20for-OpenClaw-blueviolet?style=flat-square" alt="Built for OpenClaw">
+  <a href="https://github.com/tuncer-deniz/openclaw-optimization/stargazers"><img src="https://img.shields.io/github/stars/tuncer-deniz/openclaw-optimization?style=flat-square" alt="GitHub Stars"></a>
+  <a href="https://x.com/tuncerdeniz"><img src="https://img.shields.io/badge/follow-%40tuncerdeniz-1DA1F2?style=flat-square&logo=x&logoColor=white" alt="Follow @tuncerdeniz"></a>
+</p>
+
+# OpenClaw Optimization Skill v4.0.0
 
 Systematic performance optimization for [OpenClaw](https://github.com/openclaw/openclaw) AI agents. Reduce token usage, clean up session bloat, and automate ongoing maintenance.
 
