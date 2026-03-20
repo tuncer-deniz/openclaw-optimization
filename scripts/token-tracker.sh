@@ -11,14 +11,14 @@ mkdir -p "$(dirname "$TRACK_FILE")"
 
 python3 << PYEOF
 import json, os, glob
-from datetime import datetime
+from datetime import datetime, timezone
 
 workspace = "$WORKSPACE"
 agents_dir = "$AGENTS_DIR"
 track_file = "$TRACK_FILE"
 
 entry = {
-    "timestamp": datetime.utcnow().isoformat() + "Z",
+    "timestamp": datetime.now(timezone.utc).isoformat(),
     "agents": {},
     "workspace_files": {},
     "workspace_total_kb": 0
