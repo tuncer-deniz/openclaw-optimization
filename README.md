@@ -9,7 +9,7 @@
   <a href="https://x.com/tuncerdeniz"><img src="https://img.shields.io/badge/follow-%40tuncerdeniz-1DA1F2?style=flat-square&logo=x&logoColor=white" alt="Follow @tuncerdeniz"></a>
 </p>
 
-# OpenClaw Optimization Skill v4.0.0
+# OpenClaw Optimization Skill v4.1.0
 
 Systematic performance optimization for [OpenClaw](https://github.com/openclaw/openclaw) AI agents. Reduce token usage, clean up session bloat, and automate ongoing maintenance.
 
