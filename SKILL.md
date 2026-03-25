@@ -408,6 +408,71 @@ lcm_expand --summaryIds sum_abc123
 
 LCM complements session cleanup — cleanup removes dead sessions, LCM compresses live ones.
 
+## Phase 10: Deleted Session File Cleanup
+
+Over time, deleted sessions leave behind `*.jsonl.deleted.*` residue files that accumulate silently. This script finds and removes them.
+
+### How to Run
+
+```bash
+# Preview (safe dry-run)
+bash scripts/cleanup-deleted-sessions.sh
+
+# Actually delete stale files (>7 days old)
+bash scripts/cleanup-deleted-sessions.sh --force
+```
+
+**What it does:**
+- Scans `~/.openclaw/agents/` for `*.jsonl.deleted.*` files
+- Dry-run by default — shows what would be removed with sizes
+- `--force` deletes files older than 7 days and reports reclaimed space
+
+**Add to cron (monthly cleanup):**
+```bash
+openclaw cron add \
+  --name "deleted-sessions-cleanup" \
+  --cron "0 4 1 * *" \
+  --agent main \
+  --session isolated \
+  --message "Run: bash ~/.openclaw/skills/openclaw-optimization/scripts/cleanup-deleted-sessions.sh --force. Post before/after disk summary."
+```
+
+### Cron Stagger Recommendations
+
+When running multiple maintenance crons, stagger them to avoid simultaneous load:
+
+| Job | Schedule | Notes |
+|-----|----------|-------|
+| Session cleanup | Sun 3:00 AM | Weekly, heaviest job |
+| Camofox tab cleanup | Every 6h (0 */6) | Lightweight |
+| Token tracking | Daily 6:00 AM | Quick read |
+| Workspace budget | Mon 9:00 AM | Weekly audit |
+| Deleted file cleanup | 1st of month 4:00 AM | Monthly, after session cleanup day |
+
+Stagger by at least 30 min between jobs that touch the same agent. Never run session-cleanup and deleted-cleanup simultaneously.
+
+## Changelog
+
+### v1.3.0 (2026-03-25)
+- Added `cleanup-deleted-sessions.sh` — cleans up `*.jsonl.deleted.*` residue files
+- Updated `health-check.sh` — new structured markdown output with agent-level stats, orphan check, and workspace budget summary
+- Updated `workspace-budget.sh` — improved markdown report with disk usage breakdown and top-10 largest files
+- Added cron stagger recommendations pattern (Phase 10)
+
+### v1.2.0
+- Added `workspace-budget.sh` — workspace file size tracking with CSV trend log
+- Added `camofox-cleanup.sh` — stale Camofox tab cleanup
+- Added `channel-health.sh` — Discord/channel health diagnostics
+- Added Phase 9: LCM integration docs
+
+### v1.1.0
+- Added `token-tracker.sh` — daily token usage logging
+- Added `fix-sessions-json.py` — sessions.json repair utility
+- Added Phase 5: multi-agent optimization docs
+
+### v1.0.0
+- Initial release with `session-cleanup.sh`, `find-orphans.py`, `checkpoint.sh`
+
 ## Success Metrics
 After full optimization:
 - [ ] All workspace files under target sizes
