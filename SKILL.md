@@ -453,24 +453,24 @@ Stagger by at least 30 min between jobs that touch the same agent. Never run ses
 
 ## Changelog
 
-### v1.3.0 (2026-03-25)
+### v4.1.0 (2026-03-25)
 - Added `cleanup-deleted-sessions.sh` — cleans up `*.jsonl.deleted.*` residue files
 - Updated `health-check.sh` — new structured markdown output with agent-level stats, orphan check, and workspace budget summary
 - Updated `workspace-budget.sh` — improved markdown report with disk usage breakdown and top-10 largest files
 - Added cron stagger recommendations pattern (Phase 10)
 
-### v1.2.0
+### v4.0.0
 - Added `workspace-budget.sh` — workspace file size tracking with CSV trend log
 - Added `camofox-cleanup.sh` — stale Camofox tab cleanup
 - Added `channel-health.sh` — Discord/channel health diagnostics
 - Added Phase 9: LCM integration docs
 
-### v1.1.0
+### v3.0.0
 - Added `token-tracker.sh` — daily token usage logging
 - Added `fix-sessions-json.py` — sessions.json repair utility
 - Added Phase 5: multi-agent optimization docs
 
-### v1.0.0
+### v2.0.0
 - Initial release with `session-cleanup.sh`, `find-orphans.py`, `checkpoint.sh`
 
 ## Success Metrics
